@@ -17,6 +17,7 @@ LIBRARY_LOADING_RETRIES = 1
 LIBRARY_NAME = 'Neo4Django'
 LIBRARY_LOADING_ERROR = 'neo4django: "%s" library not loaded!'
 LIBRARY_ERROR_REGEX = _re.compile(LIBRARY_LOADING_ERROR % '.*?')
+LIBRARY_SOURCE = _pkg_resource_stream(__package__.split('.', 1)[0], 'gremlin/library.groovy').read()
 
 other_libraries = {}
 
@@ -104,10 +105,7 @@ class EnhancedGraphDatabase(GraphDatabase):
         ext = self.extensions.GremlinPlugin
 
         def include_main_library(s):
-            #get the library source
-            lib_source = _pkg_resource_stream(__package__.split('.',1)[0],
-                                        'gremlin/library.groovy').read()
-            return lib_source + '\n' + s
+            return LIBRARY_SOURCE + '\n' + s
 
         def include_unloaded_libraries(s):
             for name in other_libraries.keys():
@@ -138,7 +136,7 @@ class EnhancedGraphDatabase(GraphDatabase):
             return send_script(all_libs, params)
         for i in xrange(LIBRARY_LOADING_RETRIES + 1):
             try:
-                return send_script(include_unloaded_libraries(lib_script), 
+                return send_script(include_unloaded_libraries(lib_script),
                                    params)
             except _LibraryCouldNotLoad:
                 if i == 0:
