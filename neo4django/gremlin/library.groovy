@@ -3,7 +3,6 @@ import org.neo4j.graphdb.index.IndexManager
 import com.tinkerpop.blueprints.pgm.impls.neo4j.Neo4jIndex
 
 import org.neo4j.cypher.javacompat.ExecutionEngine
-import org.neo4j.cypher.javacompat.CypherParser
 
 class Neo4Django {
     static public binding
@@ -14,16 +13,7 @@ class Neo4Django {
     static final UNIQUENESS_ERROR_MESSAGE = 'neo4django: uniqueness error'
     static final INTERNAL_ATTR='_neo4django'
     static final TYPE_ATTR=INTERNAL_ATTR + '_type'
-    static cypher(queryString, params) {
-        def query, engine = new ExecutionEngine(binding.g.getRawGraph())
-        if (parsedCypher.containsKey(queryString)) {
-            query = parsedCypher[queryString]
-        } else {
-            def parser = new CypherParser()
-            query = parser.parse(queryString)
-        }
-        return engine.execute(query, params)
-    }
+
     static getModelTypes(nodes){
         /* Return a table with a node and its neo4django type name.*/
         //TODO
